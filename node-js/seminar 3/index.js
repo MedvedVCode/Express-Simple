@@ -4,58 +4,77 @@ const path = require('path');
 
 const countsFileName = 'counts.json';
 
-let counts = null;
-
 const fullPath = path.join(__dirname, countsFileName);
-
-fs.readFile(fullPath, 'utf-8', (err, data) => {
-	if (err) {
-		console.error(err);
-	} else {
-		console.log(`Файл прочитан ${countsFileName} ->`, data);
-		counts = JSON.parse(data);
-		console.log('Из fs.read ->', counts);
-	}
-});
 
 const app = express();
 const PORT = 3000;
 
 app.use((req, res, next) => {
+	let counts = {};
 	console.log('Поступил запрос', req.method, req.url);
+	try {
+		fs.accessSync(fullPath, fs.constants.F_OK);
+		console.log(`Файл ${countsFileName} может быть прочитан!`);
+		try {
+			counts = JSON.parse(fs.readFileSync(fullPath));
+			console.log(`Файл ${countsFileName} успешно прочитан!`);
+		} catch (error) {
+			console.log(error);
+		}
+		if (counts[req.url]) {
+			counts[req.url] += 1;
+			writeCounts(counts);
+		} else {
+			counts[req.url] = 1;
+			writeCounts(counts);
+		}
+	} catch (error) {
+		console.error(`Файл ${countsFileName} не существует, создаем его!`);
+		counts[req.url] = 1;
+		writeCounts(counts);
+	}
+	req.viewCounts = counts[req.url];
 	next();
 });
 
 app.get('/', (req, res) => {
-	counts.index += 1;
 	res.send(
 		`<h1>Добро пожаловать на страничку Index</h1>
 		<a href="/about">About</a>
-		<p>Всего посещений странички Index: ${counts.index}`
+		<a href="/contacts">Contacts</a>
+
+		<p>Всего посещений странички Index: ${req.viewCounts}`
 	);
-	writeCounts(counts);
 });
 
 app.get('/about', (req, res) => {
-	counts.about += 1;
 	res.send(
 		`<h1>Добро пожаловать на страничку about</h1>
 		<a href="/">Index</a>
-		<p>Всего посещений странички About: ${counts.about}`
+		<a href="/contacts">Contacts</a>
+		<p>Всего посещений странички About: ${req.viewCounts}`
 	);
-	writeCounts(counts);
+});
+
+app.get('/contacts', (req, res) => {
+	res.send(
+		`<h1>Добро пожаловать на страничку about</h1>
+		<a href="/">Index</a>
+		<a href="/about">About</a>
+		<p>Всего посещений странички Contacts: ${req.viewCounts}`
+	);
 });
 
 app.listen(PORT, () => {
-	console.log(`Сервер запущен на порту  ${PORT}`);
+	console.log(`Сервер запущен на порту ${PORT}`);
 });
 
 function writeCounts(counts) {
-	fs.writeFile(fullPath, JSON.stringify(counts, null, 2), (err) => {
-		if (err) {
-			console.error(err);
-		} else {
-			console.log(`Файл ${countsFileName} записан!`);
-		}
-	});
+	try {
+		fs.writeFileSync(fullPath, JSON.stringify(counts, null, 2), 'utf-8');
+		console.log('Counts = ', counts);
+		console.log(`Файл ${countsFileName} успешно записан!`);
+	} catch (error) {
+		console.log(error);
+	}
 }
