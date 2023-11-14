@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "firstName": "Petr",
+    "lastName": "Petrov",
+    "age": 25,
+    "city": "Kazan"
+  },
+  {
+    "id": 2,
+    "firstName": "Ivan",
+    "lastName": "Ivanov",
+    "age": 30,
+    "city": "Moscow"
+  },
+  {
+    "id": 3,
+    "firstName": "Olya",
+    "lastName": "Senkevich",
+    "age": 18,
+    "city": "Antaliya"
+  },
+  {
+    "id": 21,
+    "firstName": "Medved",
+    "lastName": "vCode",
+    "age": 20
+  },
+  {
+    "id": 6,
+    "firstName": "Yoda",
+    "lastName": "Star",
+    "age": 150
+  },
+  {
+    "id": 22,
+    "firstName": "Vasya",
+    "lastName": "Starz",
+    "age": 40,
+    "city": "Moscow"
+  }
+]
