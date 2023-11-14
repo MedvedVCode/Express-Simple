@@ -1,7 +1,7 @@
 checkParams = (scheme) => (req, res, next) => {
 	const validationResult = scheme.validate(req.params);
 	if (validationResult.error) {
-		return res.status(404).send(validationResult.error.details);
+		return res.status(400).send(validationResult.error.details);
 	}
 	next();
 };
@@ -9,7 +9,7 @@ checkParams = (scheme) => (req, res, next) => {
 checkBody = (scheme) => (req, res, next) => {
 	const validationResult = scheme.validate(req.body);
 	if (validationResult.error) {
-		return res.status(404).send(validationResult.error.details);
+		return res.status(400).send(validationResult.error.details);
 	}
 	next();
 };
